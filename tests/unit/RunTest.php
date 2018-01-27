@@ -7,6 +7,7 @@ use BrasseursApplis\JokesContest\Helper\FakerTrait;
 use BrasseursApplis\JokesContest\Rules\Run\BonusPoints;
 use BrasseursApplis\JokesContest\Rules\Run\MultiplyGrade;
 use BrasseursApplis\JokesContest\Rules\Run\StandardDeviation;
+use Brick\Math\BigDecimal;
 use PHPUnit\Framework\TestCase;
 
 class RunTest extends TestCase
@@ -49,7 +50,7 @@ class RunTest extends TestCase
 
         $run = Run::fromArray($jokes);
 
-        self::assertEquals(new Grade(4), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(4.8), $run->averageFor($joker));
     }
 
     /**
@@ -63,7 +64,7 @@ class RunTest extends TestCase
 
         $run = Run::fromArray($jokes)->addRule(new StandardDeviation());
 
-        self::assertEquals(new Grade(5), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(5.33), $run->averageFor($joker));
     }
 
     /**
@@ -75,9 +76,9 @@ class RunTest extends TestCase
         $otherJoker = new Joker($this->getFaker()->name());
         $jokes = $this->getJokes($joker, $otherJoker);
 
-        $run = Run::fromArray($jokes)->addRule(new BonusPoints(3));
+        $run = Run::fromArray($jokes)->addRule(BonusPoints::fromNumber(3));
 
-        self::assertEquals(new Grade(7), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(7.8), $run->averageFor($joker));
     }
 
     /**
@@ -89,9 +90,9 @@ class RunTest extends TestCase
         $otherJoker = new Joker($this->getFaker()->name());
         $jokes = $this->getJokes($joker, $otherJoker);
 
-        $run = Run::fromArray($jokes)->addRule(new MultiplyGrade(1.5));
+        $run = Run::fromArray($jokes)->addRule(MultiplyGrade::fromNumber(1.5));
 
-        self::assertEquals(new Grade(6), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(7.2), $run->averageFor($joker));
     }
 
     /**
@@ -105,9 +106,9 @@ class RunTest extends TestCase
 
         $run = Run::fromArray($jokes)
                   ->addRule(new StandardDeviation())
-                  ->addRule(new BonusPoints(1));
+                  ->addRule(BonusPoints::fromNumber(1));
 
-        self::assertEquals(new Grade(6), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(6.33), $run->averageFor($joker));
     }
 
     /**
@@ -120,10 +121,10 @@ class RunTest extends TestCase
         $jokes = $this->getJokes($joker, $otherJoker);
 
         $run = Run::fromArray($jokes)
-                  ->addRule(new MultiplyGrade(1.5))
-                  ->addRule(new BonusPoints(3));
+                  ->addRule(MultiplyGrade::fromNumber(1.5))
+                  ->addRule(BonusPoints::fromNumber(2));
 
-        self::assertEquals(new Grade(9), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(9.2), $run->averageFor($joker));
     }
 
     /**
@@ -136,10 +137,10 @@ class RunTest extends TestCase
         $jokes = $this->getJokes($joker, $otherJoker);
 
         $run = Run::fromArray($jokes)
-                  ->addRule(new BonusPoints(1))
-                  ->addRule(new MultiplyGrade(2));
+                  ->addRule(BonusPoints::fromNumber(1))
+                  ->addRule(MultiplyGrade::fromNumber(1.5));
 
-        self::assertEquals(new Grade(10), $run->averageFor($joker));
+        self::assertEquals(Grade::fromNumber(8.7), $run->averageFor($joker));
     }
 
     /**
@@ -151,12 +152,12 @@ class RunTest extends TestCase
     private function getJokes(Joker $joker, Joker $otherJoker): array
     {
         return [
-            Joke::createJoke($joker, new Grade(6), ''),
-            Joke::createJoke($joker, new Grade(0), ''),
-            Joke::createJoke($joker, new Grade(4), ''),
-            Joke::createJoke($otherJoker, new Grade(0), ''),
-            Joke::createJoke($joker, new Grade(8), ''),
-            Joke::createJoke($joker, new Grade(6), '')
+            Joke::createJoke($joker, Grade::fromNumber(6), ''),
+            Joke::createJoke($joker, Grade::fromNumber(0), ''),
+            Joke::createJoke($joker, Grade::fromNumber(4), ''),
+            Joke::createJoke($otherJoker, Grade::fromNumber(0), ''),
+            Joke::createJoke($joker, Grade::fromNumber(8), ''),
+            Joke::createJoke($joker, Grade::fromNumber(6), '')
         ];
     }
 
@@ -166,7 +167,7 @@ class RunTest extends TestCase
     public function joke(): array
     {
         return [
-            [ Joke::createJoke(new Joker($this->getFaker()->name()), new Grade($this->getFaker()->numberBetween(0, 10)), '') ]
+            [ Joke::createJoke(new Joker($this->getFaker()->name()), Grade::fromNumber($this->getFaker()->numberBetween(0, 10)), '') ]
         ];
     }
 }

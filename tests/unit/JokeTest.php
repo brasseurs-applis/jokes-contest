@@ -15,7 +15,7 @@ class JokeTest extends TestCase
     public function a joke has an author and a grade(): void
     {
         $joker = new Joker($this->getFaker()->name);
-        $grade = new Grade($this->getFaker()->numberBetween(0, 10));
+        $grade = Grade::fromNumber($this->getFaker()->numberBetween(0, 10));
 
         $joke = Joke::createJoke($joker, $grade, '');
 

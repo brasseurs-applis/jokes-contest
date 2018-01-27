@@ -29,6 +29,26 @@ class Joke
     }
 
     /**
+     * @param Joker  $joker
+     * @param Grade  $grade
+     * @param string $content
+     *
+     * @return Joke
+     */
+    public static function createJoke(
+        Joker $joker,
+        Grade $grade,
+        string $content
+    ): Joke {
+        return new self(
+            $joker,
+            $grade,
+            $content,
+            new \DateTimeImmutable()
+        );
+    }
+
+    /**
      * @param Joker $joker
      *
      * @return bool
@@ -52,25 +72,5 @@ class Joke
     public function grade(): Grade
     {
         return $this->grade;
-    }
-
-    /**
-     * @param Joker  $joker
-     * @param Grade  $grade
-     * @param string $content
-     *
-     * @return Joke
-     */
-    public static function createJoke(
-        Joker $joker,
-        Grade $grade,
-        string $content
-    ): Joke {
-        return new self(
-            $joker,
-            $grade,
-            $content,
-            new \DateTimeImmutable()
-        );
     }
 }

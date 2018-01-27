@@ -4,20 +4,32 @@ namespace BrasseursApplis\JokesContest\Rules\Run;
 
 use BrasseursApplis\JokesContest\Grade;
 use BrasseursApplis\JokesContest\JokeCollection;
+use BrasseursApplis\JokesContest\Util\BigDecimalUtil;
+use Brick\Math\BigDecimal;
 
 class MultiplyGrade extends ComposableRunRule
 {
-    /** @var float */
+    /** @var BigDecimal */
     private $multiplier;
 
     /**
      * MultiplyGrade constructor.
      *
-     * @param float $multiplier
+     * @param BigDecimal $multiplier
      */
-    public function __construct(float $multiplier)
+    private function __construct(BigDecimal $multiplier)
     {
         $this->multiplier = $multiplier;
+    }
+
+    /**
+     * @param float $number
+     *
+     * @return MultiplyGrade
+     */
+    public static function fromNumber(float $number): MultiplyGrade
+    {
+        return new self(BigDecimalUtil::fromNumber($number, Grade::PRECISION));
     }
 
     /**

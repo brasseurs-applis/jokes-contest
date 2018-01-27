@@ -28,6 +28,19 @@ class Run
     }
 
     /**
+     * @param Joke[] $jokes
+     *
+     * @return Run
+     */
+    public static function fromArray(array $jokes): Run
+    {
+        return new self(
+            new JokeCollection($jokes),
+            new NullRunRule()
+        );
+    }
+
+    /**
      * @param RunRule $rule
      *
      * @return Run
@@ -107,19 +120,6 @@ class Run
                 }
             ),
             $this->rule
-        );
-    }
-
-    /**
-     * @param Joke[] $jokes
-     *
-     * @return Run
-     */
-    public static function fromArray(array $jokes): Run
-    {
-        return new self(
-            new JokeCollection($jokes),
-            new NullRunRule()
         );
     }
 }

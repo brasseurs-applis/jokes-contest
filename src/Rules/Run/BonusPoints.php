@@ -4,20 +4,32 @@ namespace BrasseursApplis\JokesContest\Rules\Run;
 
 use BrasseursApplis\JokesContest\Grade;
 use BrasseursApplis\JokesContest\JokeCollection;
+use BrasseursApplis\JokesContest\Util\BigDecimalUtil;
+use Brick\Math\BigDecimal;
 
 class BonusPoints extends ComposableRunRule
 {
-    /** @var int */
+    /** @var BigDecimal */
     private $bonusPoints;
 
     /**
      * BonusPoints constructor.
      *
-     * @param int $bonusPoints
+     * @param BigDecimal $bonusPoints
      */
-    public function __construct(int $bonusPoints)
+    private function __construct(BigDecimal $bonusPoints)
     {
         $this->bonusPoints = $bonusPoints;
+    }
+
+    /**
+     * @param float $number
+     *
+     * @return BonusPoints
+     */
+    public static function fromNumber(float $number): BonusPoints
+    {
+        return new self(BigDecimalUtil::fromNumber($number, Grade::PRECISION));
     }
 
     /**

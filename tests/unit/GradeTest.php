@@ -16,7 +16,7 @@ class GradeTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Grade($this->getFaker()->numberBetween(PHP_INT_MIN, -1));
+        Grade::fromNumber($this->getFaker()->numberBetween(PHP_INT_MIN, -1));
     }
 
     /**
@@ -26,7 +26,7 @@ class GradeTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Grade($this->getFaker()->numberBetween(10, PHP_INT_MAX));
+        Grade::fromNumber($this->getFaker()->numberBetween(10, PHP_INT_MAX));
     }
 
     /**
@@ -36,9 +36,9 @@ class GradeTest extends TestCase
     {
         $number = $this->getFaker()->numberBetween(0, 10);
 
-        $grade = new Grade($number);
+        $grade = Grade::fromNumber($number);
         
-        self::assertTrue($grade->equals(new Grade($number)));
+        self::assertTrue($grade->equals(Grade::fromNumber($number)));
     }
 
     /**
@@ -46,7 +46,7 @@ class GradeTest extends TestCase
      */
     public function the average of no grades is an average of zero(): void
     {
-        $zero = new Grade(0);
+        $zero = Grade::fromNumber(0);
 
         self::assertTrue($zero->equals(Grade::average([])));
     }

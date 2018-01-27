@@ -22,6 +22,10 @@ class ContestTest extends TestCase
         $winner = $contest->getWinner();
 
         $this->assertTrue($jokerTwo->is($winner));
+
+        $ranking = $contest->ranking();
+
+        self::assertEquals(15, $ranking->getScoreOf(1)->grade()->toFloat());
     }
 
     /**
@@ -44,19 +48,19 @@ class ContestTest extends TestCase
      */
     private function getRuns($jokerOne, $jokerTwo): array
     {
-        $jokeOneJokerOne = Joke::createJoke($jokerOne, new Grade(1), '');
-        $jokeTwoJokerOne = Joke::createJoke($jokerOne, new Grade(2), '');
-        $jokeThreeJokerOne = Joke::createJoke($jokerOne, new Grade(3), '');
-        $jokeFourJokerOne = Joke::createJoke($jokerOne, new Grade(4), '');
-        $jokeFiveJokerOne = Joke::createJoke($jokerOne, new Grade(5), '');
-        $jokeSixJokerOne = Joke::createJoke($jokerOne, new Grade(6), '');
+        $jokeOneJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(1), '');
+        $jokeTwoJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(2), '');
+        $jokeThreeJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(3), '');
+        $jokeFourJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(4), '');
+        $jokeFiveJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(5), '');
+        $jokeSixJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(6), '');
 
-        $jokeOneJokerTwo = Joke::createJoke($jokerTwo, new Grade(5), '');
-        $jokeTwoJokerTwo = Joke::createJoke($jokerTwo, new Grade(6), '');
-        $jokeThreeJokerTwo = Joke::createJoke($jokerTwo, new Grade(7), '');
-        $jokeFourJokerTwo = Joke::createJoke($jokerTwo, new Grade(8), '');
-        $jokeFiveJokerTwo = Joke::createJoke($jokerTwo, new Grade(9), '');
-        $jokeSixJokerTwo = Joke::createJoke($jokerTwo, new Grade(10), '');
+        $jokeOneJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(5), '');
+        $jokeTwoJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(6), '');
+        $jokeThreeJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(7), '');
+        $jokeFourJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(8), '');
+        $jokeFiveJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(9), '');
+        $jokeSixJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(10), '');
 
         $runOne = Run::fromArray([
             $jokeOneJokerOne,

@@ -3,44 +3,70 @@
 namespace BrasseursApplis\JokesContest;
 
 use Assert\Assert;
+use BrasseursApplis\JokesContest\Util\BigDecimalUtil;
+use Brick\Math\BigDecimal;
+use Brick\Math\BigInteger;
+use Brick\Math\RoundingMode;
 
 class Grade implements Comparable
 {
-    /** @var int */
+    const PRECISION = 2;
+
+    /** @var BigDecimal */
     private $grade;
 
     /**
      * Grade constructor.
      *
-     * @param int $grade
+     * @param BigDecimal $grade
      */
-    public function __construct(int $grade)
+    private function __construct(BigDecimal $grade)
     {
-        Assert::that($grade)
-            ->greaterOrEqualThan(0)
-            ->lessOrEqualThan(10);
-
         $this->grade = $grade;
     }
 
     /**
-     * @param int $points
+     * @param float $grade
      *
      * @return Grade
+     *
+     * @throws \InvalidArgumentException
      */
-    public function addPoint(int $points): Grade
+    public static function fromNumber(float $grade): Grade
     {
-        return new self($this->grade + $points);
+        Assert::that($grade)
+              ->greaterOrEqualThan(0)
+              ->lessOrEqualThan(10);
+
+        return new self(BigDecimalUtil::fromNumber($grade, Grade::PRECISION));
     }
 
     /**
-     * @param float $multiplier
+     * @param BigDecimal $points
      *
      * @return Grade
      */
-    public function multiply(float $multiplier): Grade
+    public function addPoint(BigDecimal $points): Grade
     {
-        return new self($this->grade * $multiplier);
+        return new self(
+            $this->grade
+                ->plus($points)
+                ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
+        );
+    }
+
+    /**
+     * @param BigDecimal $multiplier
+     *
+     * @return Grade
+     */
+    public function multiply(BigDecimal $multiplier): Grade
+    {
+        return new self(
+            $this->grade
+                ->multipliedBy($multiplier)
+                ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
+        );
     }
 
     /**
@@ -50,7 +76,7 @@ class Grade implements Comparable
      */
     public function equals(Grade $grade): bool
     {
-        return $this->grade === $grade->grade;
+        return $this->grade->isEqualTo($grade->grade);
     }
 
     /**
@@ -60,25 +86,56 @@ class Grade implements Comparable
      */
     public static function average(array $grades): Grade
     {
+        $numberOfGrades = count($grades);
+
+        if ($numberOfGrades === 0) {
+            return self::fromNumber(0);
+        }
+
+        return new self(
+            self::sum($grades)->grade->dividedBy(
+                BigInteger::of($numberOfGrades),
+                self::PRECISION,
+                RoundingMode::HALF_EVEN
+            )->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
+        );
+    }
+
+    /**
+     * @param Grade[] $grades
+     *
+     * @return Grade
+     */
+    public static function sum(array $grades): Grade
+    {
         Assert::that($grades)
-            ->all()
-            ->isInstanceOf(Grade::class);
+              ->all()
+              ->isInstanceOf(Grade::class);
 
         $numberOfGrades = count($grades);
 
         if ($numberOfGrades === 0) {
-            return new self(0);
+            return self::fromNumber(0);
         }
 
-        return new self(
+        return new Grade(
             array_reduce(
                 $grades,
-                function ($sum, Grade $grade) {
-                    return $sum + $grade->grade;
+                function (BigDecimal $sum, Grade $grade) {
+                    return $sum->plus($grade->grade)
+                               ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN);
                 },
-                0
-            ) / $numberOfGrades
+                BigDecimal::ofUnscaledValue(0, self::PRECISION)
+            )
         );
+    }
+
+    /**
+     * @return float
+     */
+    public function toFloat(): float
+    {
+        return $this->grade->toFloat();
     }
 
     /**
@@ -98,6 +155,6 @@ class Grade implements Comparable
             throw new \InvalidArgumentException('You can only compare two grades');
         }
 
-        return $this->grade - $other->grade;
+        return $this->grade->compareTo($other->grade);
     }
 }

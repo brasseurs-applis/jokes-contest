@@ -30,6 +30,20 @@ class Ranking
      */
     public function getFirst(): Joker
     {
-        return $this->scores[0]->participant();
+        return $this->getScoreOf(1)->participant();
+    }
+
+    /**
+     * @param int $position
+     *
+     * @return Score
+     */
+    public function getScoreOf(int $position): Score
+    {
+        if (isset($this->scores[$position - 1])) {
+            return $this->scores[$position - 1];
+        }
+
+        throw new \InvalidArgumentException('Position is not valid');
     }
 }

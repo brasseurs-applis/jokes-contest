@@ -22,9 +22,7 @@ class Contest
      */
     public function getWinner(): Joker
     {
-        $ranking = $this->ranking();
-
-        return $ranking->getFirst();
+        return $this->ranking()->getFirst();
     }
 
     /**
@@ -87,7 +85,7 @@ class Contest
     {
         return new Score(
             $joker,
-            Grade::average(
+            Grade::sum(
                 array_map(
                     function (Run $run) use ($joker) {
                         return $run->averageFor($joker);

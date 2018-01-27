@@ -37,7 +37,7 @@ class Score implements Comparable
      */
     public function grade(): Grade
     {
-        return $this->grade();
+        return $this->grade;
     }
 
     /**
