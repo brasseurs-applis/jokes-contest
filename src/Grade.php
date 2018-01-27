@@ -24,6 +24,26 @@ class Grade implements Comparable
     }
 
     /**
+     * @param int $points
+     *
+     * @return Grade
+     */
+    public function addPoint(int $points): Grade
+    {
+        return new self($this->grade + $points);
+    }
+
+    /**
+     * @param float $multiplier
+     *
+     * @return Grade
+     */
+    public function multiply(float $multiplier): Grade
+    {
+        return new self($this->grade * $multiplier);
+    }
+
+    /**
      * @param Grade $grade
      *
      * @return bool

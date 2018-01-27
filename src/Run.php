@@ -2,25 +2,42 @@
 
 namespace BrasseursApplis\JokesContest;
 
-use Assert\Assert;
+use BrasseursApplis\JokesContest\Rules\Run\NullRunRule;
+use BrasseursApplis\JokesContest\Rules\RunRule;
 
 class Run
 {
-    /** @var Joke[] */
+    /** @var JokeCollection */
     private $jokes;
+
+    /** @var RunRule */
+    private $rule;
 
     /**
      * Run constructor.
      *
-     * @param Joke[] $jokes
+     * @param JokeCollection $jokes
+     * @param RunRule        $rule
      */
-    public function __construct(array $jokes = [])
-    {
-        Assert::that($jokes)
-            ->all()
-            ->isInstanceOf(Joke::class);
+    public function __construct(
+        JokeCollection $jokes,
+        RunRule $rule
+    ) {
+        $this->jokes = $jokes;
+        $this->rule = $rule;
+    }
 
-        $this->jokes = array_values($jokes);
+    /**
+     * @param RunRule $rule
+     *
+     * @return Run
+     */
+    public function addRule(RunRule $rule): Run
+    {
+        return new self(
+            $this->jokes,
+            $this->rule->combine($rule)
+        );
     }
 
     /**
@@ -30,9 +47,7 @@ class Run
      */
     public function add(Joke $joke): Run
     {
-        return new self(
-            array_merge($this->jokes, [ $joke ])
-        );
+        return new self($this->jokes->add($joke), $this->rule);
     }
 
     /**
@@ -40,7 +55,7 @@ class Run
      */
     public function countJokes(): int
     {
-        return count($this->jokes);
+        return $this->jokes->count();
     }
 
     /**
@@ -48,12 +63,7 @@ class Run
      */
     public function participants(): array
     {
-        return array_map(
-            function (Joke $joke) {
-                return $joke->author();
-            },
-            $this->jokes
-        );
+        return $this->jokes->jokers();
     }
 
     /**
@@ -61,12 +71,11 @@ class Run
      */
     public function globalAverage(): Grade
     {
-        return Grade::average(
-            array_map(
-                function(Joke $joke) {
-                    return $joke->grade();
-                },
-                $this->jokes
+        return $this->rule->onGrade(
+            Grade::average(
+                $this->rule->onJokes(
+                    $this->jokes
+                )->grades()
             )
         );
     }
@@ -81,6 +90,7 @@ class Run
         return $this
             ->runOf($joker)
             ->globalAverage();
+
     }
 
     /**
@@ -90,16 +100,26 @@ class Run
      */
     private function runOf(Joker $joker): Run
     {
-        return array_reduce(
-            $this->jokes,
-            function (Run $run, Joke $joke) use ($joker){
-                if ($joke->isFrom($joker)) {
-                    return $run->add($joke);
+        return new self(
+            $this->jokes->filter(
+                function (Joke $joke) use ($joker) {
+                    return $joke->isFrom($joker);
                 }
+            ),
+            $this->rule
+        );
+    }
 
-                return $run;
-            },
-            new self()
+    /**
+     * @param Joke[] $jokes
+     *
+     * @return Run
+     */
+    public static function fromArray(array $jokes): Run
+    {
+        return new self(
+            new JokeCollection($jokes),
+            new NullRunRule()
         );
     }
 }

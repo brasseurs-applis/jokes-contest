@@ -31,7 +31,7 @@ class ContestTest extends TestCase
     {
         $contest = new Contest();
 
-        $contest = $contest->addRun(new Run());
+        $contest = $contest->addRun(Run::fromArray([]));
 
         self::assertEquals(1, $contest->numberOfRuns());
     }
@@ -58,7 +58,7 @@ class ContestTest extends TestCase
         $jokeFiveJokerTwo = Joke::createJoke($jokerTwo, new Grade(9), '');
         $jokeSixJokerTwo = Joke::createJoke($jokerTwo, new Grade(10), '');
 
-        $runOne = new Run([
+        $runOne = Run::fromArray([
             $jokeOneJokerOne,
             $jokeOneJokerTwo,
             $jokeTwoJokerOne,
@@ -67,7 +67,7 @@ class ContestTest extends TestCase
             $jokeThreeJokerTwo
         ]);
 
-        $runTwo = new Run([
+        $runTwo = Run::fromArray([
             $jokeFourJokerOne,
             $jokeFourJokerTwo,
             $jokeFiveJokerOne,

@@ -33,6 +33,5 @@
 
     <logging>
         <log type="coverage-html" target="./tests/output/coverage/" charset="UTF-8" yui="true" highlight="true" />
-        <log type="junit" target="./tests/output/coverage/Results/Results.xml" logIncompleteSkipped="true"/>
     </logging>
 </phpunit>
