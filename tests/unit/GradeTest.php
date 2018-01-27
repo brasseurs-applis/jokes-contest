@@ -12,7 +12,7 @@ class GradeTest extends TestCase
     /**
      * @test
      */
-    public function a grade cannot be lower than zero()
+    public function a grade cannot be lower than zero(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -22,7 +22,7 @@ class GradeTest extends TestCase
     /**
      * @test
      */
-    public function a grade cannot be greater than ten()
+    public function a grade cannot be greater than ten(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -32,7 +32,7 @@ class GradeTest extends TestCase
     /**
      * @test
      */
-    public function a grade between zero and ten is acceptable()
+    public function a grade between zero and ten is acceptable(): void
     {
         $number = $this->getFaker()->numberBetween(0, 10);
 
@@ -44,7 +44,7 @@ class GradeTest extends TestCase
     /**
      * @test
      */
-    public function the average of no grades is an average of zero()
+    public function the average of no grades is an average of zero(): void
     {
         $zero = new Grade(0);
 

@@ -18,7 +18,7 @@ class JokerTest extends TestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->name = $this->getFaker()->name();
 
@@ -28,7 +28,7 @@ class JokerTest extends TestCase
     /**
      * Teardown
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         \Mockery::close();
     }
@@ -36,7 +36,7 @@ class JokerTest extends TestCase
     /**
      * @test
      */
-    public function a joker has a name()
+    public function a joker has a name(): void
     {
         self::assertEquals($this->name, $this->sut->name());
     }
@@ -44,7 +44,7 @@ class JokerTest extends TestCase
     /**
      * @test
      */
-    public function two jokers can be different()
+    public function two jokers can be different(): void
     {
         $otherJoker = new Joker($this->getFaker()->name());
 
@@ -54,7 +54,7 @@ class JokerTest extends TestCase
     /**
      * @test
      */
-    public function two jokers can be the same()
+    public function two jokers can be the same(): void
     {
         $otherJoker = new Joker($this->name);
 

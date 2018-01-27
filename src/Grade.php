@@ -4,7 +4,7 @@ namespace BrasseursApplis\JokesContest;
 
 use Assert\Assert;
 
-class Grade
+class Grade implements Comparable
 {
     /** @var int */
     private $grade;
@@ -59,5 +59,25 @@ class Grade
                 0
             ) / $numberOfGrades
         );
+    }
+
+    /**
+     * It must return a negative value if the current object is less than the other,
+     * a positive value if the current object is greater than the other, and zero
+     * if they are equal.
+     *
+     * @param Comparable $other
+     *
+     * @return int
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function compare(Comparable $other): int
+    {
+        if (! $other instanceof Grade) {
+            throw new \InvalidArgumentException('You can only compare two grades');
+        }
+
+        return $this->grade - $other->grade;
     }
 }

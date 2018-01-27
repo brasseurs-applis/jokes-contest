@@ -13,7 +13,7 @@ class RunTest extends TestCase
     /**
      * @test
      */
-    public function it cannot accept elements other than jokes()
+    public function it cannot accept elements other than jokes(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -23,8 +23,10 @@ class RunTest extends TestCase
     /**
      * @test
      * @dataProvider joke
+     *
+     * @param Joke $joke
      */
-    public function it is possible to add a joke to the run(Joke $joke)
+    public function it is possible to add a joke to the run(Joke $joke): void
     {
         $run = new Run([]);
 
@@ -36,7 +38,7 @@ class RunTest extends TestCase
     /**
      * @test
      */
-    public function it calculates the average of all grades for a joker()
+    public function it calculates the average of all grades for a joker(): void
     {
         $joker = new Joker($this->getFaker()->name());
         $otherJoker = new Joker($this->getFaker()->name());

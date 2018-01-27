@@ -39,9 +39,17 @@ class Joke
     }
 
     /**
+     * @return Joker
+     */
+    public function author(): Joker
+    {
+        return $this->joker;
+    }
+
+    /**
      * @return Grade
      */
-    public function getGrade(): Grade
+    public function grade(): Grade
     {
         return $this->grade;
     }

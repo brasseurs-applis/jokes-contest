@@ -44,6 +44,19 @@ class Run
     }
 
     /**
+     * @return Joker[]
+     */
+    public function participants(): array
+    {
+        return array_map(
+            function (Joke $joke) {
+                return $joke->author();
+            },
+            $this->jokes
+        );
+    }
+
+    /**
      * @return Grade
      */
     public function globalAverage(): Grade
@@ -51,7 +64,7 @@ class Run
         return Grade::average(
             array_map(
                 function(Joke $joke) {
-                    return $joke->getGrade();
+                    return $joke->grade();
                 },
                 $this->jokes
             )
