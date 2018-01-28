@@ -3,24 +3,55 @@
 namespace BrasseursApplis\JokesContest;
 
 use Assert\Assert;
+use BrasseursApplis\JokesContest\Rules\RunRule;
 
 class JokeCollection
 {
+    /** @var Joker */
+    private $joker;
+
     /** @var Joke[] */
     private $jokes;
 
     /**
      * JokeCollection constructor.
      *
+     * @param Joker  $joker
      * @param Joke[] $jokes
      */
-    public function __construct(array $jokes)
-    {
+    private function __construct(
+        Joker $joker,
+        array $jokes
+    ) {
         Assert::that($jokes)
               ->all()
               ->isInstanceOf(Joke::class);
 
+        $this->joker = $joker;
         $this->jokes = array_values($jokes);
+    }
+
+    /**
+     * @param Joker $joker
+     *
+     * @return JokeCollection
+     */
+    public static function createNew(Joker $joker): JokeCollection
+    {
+        return new self($joker, []);
+    }
+
+    /**
+     * @param Joke $joke
+     *
+     * @return JokeCollection
+     */
+    public static function fromJoke(Joke $joke): JokeCollection
+    {
+        return new self(
+            $joke->author(),
+            [ $joke ]
+        );
     }
 
     /**
@@ -30,7 +61,12 @@ class JokeCollection
      */
     public function add(Joke $joke): JokeCollection
     {
+        if (! $joke->isFrom($this->joker)) {
+            return $this;
+        }
+
         return new self(
+            $this->joker,
             array_merge($this->jokes, [ $joke ])
         );
     }
@@ -40,48 +76,41 @@ class JokeCollection
      */
     public function count(): int
     {
-        return count($this->jokes);
+        return \count($this->jokes);
     }
 
     /**
-     * @return Joker[]
-     */
-    public function jokers(): array
-    {
-        return array_map(
-            function (Joke $joke) {
-                return $joke->author();
-            },
-            $this->jokes
-        );
-    }
-
-    /**
-     * @return Grade[]
-     */
-    public function grades(): array
-    {
-        return array_map(
-            function (Joke $joke) {
-                return $joke->grade();
-            },
-            $this->jokes
-        );
-    }
-
-    /**
-     * @param callable $filter
+     * @param RunRule $rule
      *
-     * @return JokeCollection
+     * @return Grade
      */
-    public function filter(callable $filter): JokeCollection
+    public function average(RunRule $rule): Grade
     {
-        return new self(
-            array_filter(
-                $this->jokes,
-                $filter
+        return $rule->onGrade(
+            Grade::average(
+                $rule->onJokes(
+                    $this
+                )->grades()
             )
         );
+    }
+
+    /**
+     * @return Joker
+     */
+    public function author(): Joker
+    {
+        return $this->joker;
+    }
+
+    /**
+     * @param Joker $joker
+     *
+     * @return bool
+     */
+    public function isFrom(Joker $joker): bool
+    {
+        return $this->joker->is($joker);
     }
 
     /**
@@ -98,7 +127,7 @@ class JokeCollection
             }
         );
 
-        return new self($jokes);
+        return new self($this->joker, $jokes);
     }
 
     /**
@@ -107,7 +136,8 @@ class JokeCollection
     public function removeFirst(): JokeCollection
     {
         return new self(
-            array_slice(
+            $this->joker,
+            \array_slice(
                 $this->jokes,
                 1
             )
@@ -120,11 +150,25 @@ class JokeCollection
     public function removeLast(): JokeCollection
     {
         return new self(
-            array_slice(
+            $this->joker,
+            \array_slice(
                 $this->jokes,
                 0,
                 $this->count() -1
             )
+        );
+    }
+
+    /**
+     * @return Grade[]
+     */
+    private function grades(): array
+    {
+        return array_map(
+            function (Joke $joke) {
+                return $joke->grade();
+            },
+            $this->jokes
         );
     }
 }

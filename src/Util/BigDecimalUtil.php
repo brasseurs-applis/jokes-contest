@@ -14,6 +14,6 @@ class BigDecimalUtil
      */
     public static function fromNumber(float $number, int $precision): BigDecimal
     {
-        return BigDecimal::ofUnscaledValue($number * pow(10, $precision), $precision);
+        return BigDecimal::ofUnscaledValue($number * (10 ** $precision), $precision);
     }
 }

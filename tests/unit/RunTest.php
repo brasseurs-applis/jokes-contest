@@ -7,7 +7,6 @@ use BrasseursApplis\JokesContest\Helper\FakerTrait;
 use BrasseursApplis\JokesContest\Rules\Run\BonusPoints;
 use BrasseursApplis\JokesContest\Rules\Run\MultiplyGrade;
 use BrasseursApplis\JokesContest\Rules\Run\StandardDeviation;
-use Brick\Math\BigDecimal;
 use PHPUnit\Framework\TestCase;
 
 class RunTest extends TestCase

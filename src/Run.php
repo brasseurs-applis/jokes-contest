@@ -2,12 +2,13 @@
 
 namespace BrasseursApplis\JokesContest;
 
+use Assert\Assert;
 use BrasseursApplis\JokesContest\Rules\Run\NullRunRule;
 use BrasseursApplis\JokesContest\Rules\RunRule;
 
 class Run
 {
-    /** @var JokeCollection */
+    /** @var JokeCollection[] */
     private $jokes;
 
     /** @var RunRule */
@@ -16,13 +17,17 @@ class Run
     /**
      * Run constructor.
      *
-     * @param JokeCollection $jokes
-     * @param RunRule        $rule
+     * @param JokeCollection[] $jokes
+     * @param RunRule          $rule
      */
     public function __construct(
-        JokeCollection $jokes,
+        array $jokes,
         RunRule $rule
     ) {
+        Assert::that($jokes)
+            ->all()
+            ->isInstanceOf(JokeCollection::class);
+
         $this->jokes = $jokes;
         $this->rule = $rule;
     }
@@ -34,9 +39,45 @@ class Run
      */
     public static function fromArray(array $jokes): Run
     {
+        Assert::that($jokes)
+            ->all()
+            ->isInstanceOf(Joke::class);
+
+        return array_reduce(
+            $jokes,
+            function (Run $run, Joke $joke) {
+                return $run->add($joke);
+            },
+            new self([], new NullRunRule())
+        );
+    }
+
+    /**
+     * @param Joke $joke
+     *
+     * @return Run
+     */
+    public function add(Joke $joke): Run
+    {
+        if (! $this->hasAlreadyMadeJokes($joke->author())) {
+            return new self(
+                \array_merge($this->jokes, [ JokeCollection::fromJoke($joke) ]),
+                $this->rule
+            );
+        }
+
         return new self(
-            new JokeCollection($jokes),
-            new NullRunRule()
+            array_map(
+                function (JokeCollection $jokes) use ($joke) {
+                    if ($jokes->isFrom($joke->author())) {
+                        return $jokes->add($joke);
+                    }
+
+                    return $jokes;
+                },
+                $this->jokes
+            ),
+            $this->rule
         );
     }
 
@@ -54,21 +95,17 @@ class Run
     }
 
     /**
-     * @param Joke $joke
-     *
-     * @return Run
-     */
-    public function add(Joke $joke): Run
-    {
-        return new self($this->jokes->add($joke), $this->rule);
-    }
-
-    /**
      * @return int
      */
     public function countJokes(): int
     {
-        return $this->jokes->count();
+        return array_reduce(
+            $this->jokes,
+            function (int $sum, JokeCollection $jokes) {
+                return $sum + $jokes->count();
+            },
+            0
+        );
     }
 
     /**
@@ -76,20 +113,11 @@ class Run
      */
     public function participants(): array
     {
-        return $this->jokes->jokers();
-    }
-
-    /**
-     * @return Grade
-     */
-    public function globalAverage(): Grade
-    {
-        return $this->rule->onGrade(
-            Grade::average(
-                $this->rule->onJokes(
-                    $this->jokes
-                )->grades()
-            )
+        return array_map(
+            function (JokeCollection $jokes) {
+                return $jokes->author();
+            },
+            $this->jokes
         );
     }
 
@@ -101,25 +129,44 @@ class Run
     public function averageFor(Joker $joker): Grade
     {
         return $this
-            ->runOf($joker)
-            ->globalAverage();
+            ->jokesOf($joker)
+            ->average($this->rule);
 
+    }
+
+    /**
+     * @param Joker $author
+     *
+     * @return bool
+     */
+    private function hasAlreadyMadeJokes(Joker $author): bool
+    {
+        return array_reduce(
+            $this->jokes,
+            function (bool $found, JokeCollection $jokes) use ($author) {
+                return $found || $jokes->isFrom($author);
+            },
+            false
+        );
     }
 
     /**
      * @param Joker $joker
      *
-     * @return Run
+     * @return JokeCollection
      */
-    private function runOf(Joker $joker): Run
+    private function jokesOf(Joker $joker): JokeCollection
     {
-        return new self(
-            $this->jokes->filter(
-                function (Joke $joke) use ($joker) {
-                    return $joke->isFrom($joker);
+        return array_reduce(
+            $this->jokes,
+            function (?JokeCollection $jokerJokes, JokeCollection $currentJokes) use ($joker)
+            {
+                if ($jokerJokes !== null && ! $currentJokes->isFrom($joker)) {
+                    return $jokerJokes;
                 }
-            ),
-            $this->rule
-        );
+
+                return $currentJokes;
+            }
+        ) ?: JokeCollection::createNew($joker);
     }
 }

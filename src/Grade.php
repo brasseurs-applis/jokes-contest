@@ -12,6 +12,9 @@ class Grade implements Comparable
 {
     const PRECISION = 2;
 
+    const MIN = 0;
+    const MAX = 10;
+
     /** @var BigDecimal */
     private $grade;
 
@@ -22,7 +25,7 @@ class Grade implements Comparable
      */
     private function __construct(BigDecimal $grade)
     {
-        $this->grade = $grade;
+        $this->grade = $grade->toScale(Grade::PRECISION);
     }
 
     /**
@@ -34,9 +37,10 @@ class Grade implements Comparable
      */
     public static function fromNumber(float $grade): Grade
     {
+        // The grade constraints are only put here because the constraints only exist for the outside world
         Assert::that($grade)
-              ->greaterOrEqualThan(0)
-              ->lessOrEqualThan(10);
+              ->greaterOrEqualThan(self::MIN)
+              ->lessOrEqualThan(self::MAX);
 
         return new self(BigDecimalUtil::fromNumber($grade, Grade::PRECISION));
     }
@@ -48,11 +52,7 @@ class Grade implements Comparable
      */
     public function addPoint(BigDecimal $points): Grade
     {
-        return new self(
-            $this->grade
-                ->plus($points)
-                ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
-        );
+        return new self($this->grade->plus($points));
     }
 
     /**
@@ -62,11 +62,7 @@ class Grade implements Comparable
      */
     public function multiply(BigDecimal $multiplier): Grade
     {
-        return new self(
-            $this->grade
-                ->multipliedBy($multiplier)
-                ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
-        );
+        return new self($this->grade->multipliedBy($multiplier));
     }
 
     /**
@@ -76,66 +72,7 @@ class Grade implements Comparable
      */
     public function equals(Grade $grade): bool
     {
-        return $this->grade->isEqualTo($grade->grade);
-    }
-
-    /**
-     * @param Grade[] $grades
-     *
-     * @return Grade
-     */
-    public static function average(array $grades): Grade
-    {
-        $numberOfGrades = count($grades);
-
-        if ($numberOfGrades === 0) {
-            return self::fromNumber(0);
-        }
-
-        return new self(
-            self::sum($grades)->grade->dividedBy(
-                BigInteger::of($numberOfGrades),
-                self::PRECISION,
-                RoundingMode::HALF_EVEN
-            )->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN)
-        );
-    }
-
-    /**
-     * @param Grade[] $grades
-     *
-     * @return Grade
-     */
-    public static function sum(array $grades): Grade
-    {
-        Assert::that($grades)
-              ->all()
-              ->isInstanceOf(Grade::class);
-
-        $numberOfGrades = count($grades);
-
-        if ($numberOfGrades === 0) {
-            return self::fromNumber(0);
-        }
-
-        return new Grade(
-            array_reduce(
-                $grades,
-                function (BigDecimal $sum, Grade $grade) {
-                    return $sum->plus($grade->grade)
-                               ->toScale(Grade::PRECISION, RoundingMode::HALF_EVEN);
-                },
-                BigDecimal::ofUnscaledValue(0, self::PRECISION)
-            )
-        );
-    }
-
-    /**
-     * @return float
-     */
-    public function toFloat(): float
-    {
-        return $this->grade->toFloat();
+        return $this->compare($grade) === 0;
     }
 
     /**
@@ -156,5 +93,51 @@ class Grade implements Comparable
         }
 
         return $this->grade->compareTo($other->grade);
+    }
+
+    /**
+     * @return float
+     */
+    public function toFloat(): float
+    {
+        return $this->grade->toFloat();
+    }
+
+    /**
+     * @param Grade[] $grades
+     *
+     * @return Grade
+     */
+    public static function sum(array $grades): Grade
+    {
+        Assert::that($grades)
+              ->all()
+              ->isInstanceOf(Grade::class);
+
+        return new Grade(
+            array_reduce(
+                $grades,
+                function (BigDecimal $sum, Grade $grade) {
+                    return $sum->plus($grade->grade);
+                },
+                BigDecimalUtil::fromNumber(0, self::PRECISION)
+            )
+        );
+    }
+
+    /**
+     * @param Grade[] $grades
+     *
+     * @return Grade
+     */
+    public static function average(array $grades): Grade
+    {
+        if (empty($grades)) {
+            return self::fromNumber(0);
+        }
+
+        return new self(
+            self::sum($grades)->grade->dividedBy(BigInteger::of(count($grades)),self::PRECISION,RoundingMode::HALF_EVEN)
+        );
     }
 }

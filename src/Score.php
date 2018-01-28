@@ -41,9 +41,7 @@ class Score implements Comparable
     }
 
     /**
-     * It must return a negative value if the current object is less than the other,
-     * a positive value if the current object is greater than the other, and zero
-     * if they are equal.
+     * Order is reversed here so that scores are sorted by greater score first
      *
      * @param Comparable $other
      *
@@ -57,6 +55,6 @@ class Score implements Comparable
             throw new \InvalidArgumentException('You can only compare two grades');
         }
 
-        return - $this->grade->compare($other->grade); // scores are sorted by greater score first
+        return - $this->grade->compare($other->grade);
     }
 }
