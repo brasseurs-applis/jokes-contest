@@ -118,7 +118,7 @@ class JokeCollection
      */
     public function sortByGrade(): JokeCollection
     {
-        $jokes = $this->jokes;
+        $jokes = $this->filterCancelled()->jokes;
 
         usort(
             $jokes,
@@ -168,7 +168,25 @@ class JokeCollection
             function (Joke $joke) {
                 return $joke->grade();
             },
-            $this->jokes
+            $this->filterCancelled()->jokes
+        );
+    }
+
+    /**
+     * @return JokeCollection
+     */
+    private function filterCancelled(): JokeCollection
+    {
+        return array_reduce(
+            $this->jokes,
+            function (JokeCollection $jokes, Joke $joke) {
+                if ($joke->isGraded()) {
+                    return $jokes->add($joke);
+                }
+
+                return $jokes;
+            },
+            self::createNew($this->joker)
         );
     }
 }

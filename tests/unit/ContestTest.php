@@ -48,19 +48,19 @@ class ContestTest extends TestCase
      */
     private function getRuns($jokerOne, $jokerTwo): array
     {
-        $jokeOneJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(1), '');
-        $jokeTwoJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(2), '');
-        $jokeThreeJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(3), '');
-        $jokeFourJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(4), '');
-        $jokeFiveJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(5), '');
-        $jokeSixJokerOne = Joke::createJoke($jokerOne, Grade::fromNumber(6), '');
+        $jokeOneJokerOne = Joke::graded($jokerOne, Grade::fromNumber(1), '');
+        $jokeTwoJokerOne = Joke::graded($jokerOne, Grade::fromNumber(2), '');
+        $jokeThreeJokerOne = Joke::graded($jokerOne, Grade::fromNumber(3), '');
+        $jokeFourJokerOne = Joke::graded($jokerOne, Grade::fromNumber(4), '');
+        $jokeFiveJokerOne = Joke::graded($jokerOne, Grade::fromNumber(5), '');
+        $jokeSixJokerOne = Joke::graded($jokerOne, Grade::fromNumber(6), '');
 
-        $jokeOneJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(5), '');
-        $jokeTwoJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(6), '');
-        $jokeThreeJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(7), '');
-        $jokeFourJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(8), '');
-        $jokeFiveJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(9), '');
-        $jokeSixJokerTwo = Joke::createJoke($jokerTwo, Grade::fromNumber(10), '');
+        $jokeOneJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(5), '');
+        $jokeTwoJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(6), '');
+        $jokeThreeJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(7), '');
+        $jokeFourJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(8), '');
+        $jokeFiveJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(9), '');
+        $jokeSixJokerTwo = Joke::graded($jokerTwo, Grade::fromNumber(10), '');
 
         $runOne = Run::fromArray([
             $jokeOneJokerOne,

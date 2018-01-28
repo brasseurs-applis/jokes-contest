@@ -17,7 +17,7 @@ class JokeTest extends TestCase
         $joker = new Joker($this->getFaker()->name);
         $grade = Grade::fromNumber($this->getFaker()->numberBetween(0, 10));
 
-        $joke = Joke::createJoke($joker, $grade, '');
+        $joke = Joke::graded($joker, $grade, '');
 
         self::assertTrue($joke->isFrom($joker));
         self::assertSame($grade, $joke->grade());

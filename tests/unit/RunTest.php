@@ -151,12 +151,12 @@ class RunTest extends TestCase
     private function getJokes(Joker $joker, Joker $otherJoker): array
     {
         return [
-            Joke::createJoke($joker, Grade::fromNumber(6), ''),
-            Joke::createJoke($joker, Grade::fromNumber(0), ''),
-            Joke::createJoke($joker, Grade::fromNumber(4), ''),
-            Joke::createJoke($otherJoker, Grade::fromNumber(0), ''),
-            Joke::createJoke($joker, Grade::fromNumber(8), ''),
-            Joke::createJoke($joker, Grade::fromNumber(6), '')
+            Joke::graded($joker, Grade::fromNumber(6), ''),
+            Joke::graded($joker, Grade::fromNumber(0), ''),
+            Joke::graded($joker, Grade::fromNumber(4), ''),
+            Joke::graded($otherJoker, Grade::fromNumber(0), ''),
+            Joke::graded($joker, Grade::fromNumber(8), ''),
+            Joke::graded($joker, Grade::fromNumber(6), '')
         ];
     }
 
@@ -166,7 +166,7 @@ class RunTest extends TestCase
     public function joke(): array
     {
         return [
-            [ Joke::createJoke(new Joker($this->getFaker()->name()), Grade::fromNumber($this->getFaker()->numberBetween(0, 10)), '') ]
+            [ Joke::graded(new Joker($this->getFaker()->name()), Grade::fromNumber($this->getFaker()->numberBetween(0, 10)), '') ]
         ];
     }
 }

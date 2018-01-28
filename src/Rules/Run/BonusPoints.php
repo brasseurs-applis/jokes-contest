@@ -49,6 +49,6 @@ class BonusPoints extends ComposableRunRule
      */
     public function onGrade(Grade $grade): Grade
     {
-        return $grade->addPoint($this->bonusPoints);
+        return $grade->addPoints($this->bonusPoints);
     }
 }

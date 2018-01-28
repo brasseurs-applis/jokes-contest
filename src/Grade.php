@@ -50,7 +50,7 @@ class Grade implements Comparable
      *
      * @return Grade
      */
-    public function addPoint(BigDecimal $points): Grade
+    public function addPoints(BigDecimal $points): Grade
     {
         return new self($this->grade->plus($points));
     }
