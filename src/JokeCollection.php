@@ -96,6 +96,20 @@ class JokeCollection
     }
 
     /**
+     * @return bool
+     */
+    public function containsWildcard(): bool
+    {
+        return array_reduce(
+            $this->jokes,
+            function (bool $containsWildcard, Joke $joke) {
+                return $containsWildcard || $joke->isWildcard();
+            },
+            false
+        );
+    }
+
+    /**
      * @return Joker
      */
     public function author(): Joker

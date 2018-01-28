@@ -3,6 +3,7 @@
 namespace BrasseursApplis\JokesContest;
 
 use Assert\Assert;
+use BrasseursApplis\JokesContest\Exception\TooManyWildcardsException;
 use BrasseursApplis\JokesContest\Rules\Run\NullRunRule;
 use BrasseursApplis\JokesContest\Rules\RunRule;
 
@@ -56,9 +57,17 @@ class Run
      * @param Joke $joke
      *
      * @return Run
+     *
+     * @throws TooManyWildcardsException
      */
     public function add(Joke $joke): Run
     {
+        if ($joke->isWildcard() &&
+            $this->jokesOf($joke->author())->containsWildcard()) { // Only one wildcard per author per run
+            // TODO maybe create a rule to manage it
+            throw TooManyWildcardsException::create($joke);
+        }
+
         if (! $this->hasAlreadyMadeJokes($joke->author())) {
             return new self(
                 \array_merge($this->jokes, [ JokeCollection::fromJoke($joke) ]),
@@ -88,6 +97,7 @@ class Run
      */
     public function addRule(RunRule $rule): Run
     {
+        // TODO add rules applying to one author only
         return new self(
             $this->jokes,
             $this->rule->combine($rule)
